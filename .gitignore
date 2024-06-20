@@ -1,0 +1,8 @@
+# Logging
+wandb/
+# Data
+data/
+# Models
+models/
+#Predicions
+predictions/

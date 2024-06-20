@@ -40,7 +40,7 @@ $ conda env create -f config/environment.yaml
 - ChEMBL240: hERG
 
 
-Download Data into data/:
+Download data into ```data/```:
 
 ```bash
 $ cd data/
@@ -48,7 +48,7 @@ $ cd data/
 ```
 
 # **Models**
-Following Models are supported:
+Following models are supported:
 
 - Baseline (MLP)
 - Platt - scaled MLP (MLP + P)
@@ -61,20 +61,20 @@ Following Models are supported:
 # **Configuration**
 ## Tuning Hyperparameters of MLP using wandb [[2]](#2)
 
-Start Hyperparameter Sweep with
+Start hyperparameter sweep with
 
 ```bash
 $ wandb sweep config/sweep_baseline.yaml 
 
 ```
 
-Copy Sweep ID and start agent with 
+Copy Sweep-ID and start agent with 
 ```bash
 $ wandb agent sweep_id 
 
 ```
 
-Other setting options (e.g. TargetID, Number of Model Repetitions) can be chosen in sweep_baseline.yaml. 
+Other setting options (e.g. TargetID, Number of model repetitions) can be chosen in sweep_baseline.yaml. 
 In this study, hyperparameters were tuned optimizing 4 different metrics:
 
 - Accuracy (acc)
@@ -97,9 +97,9 @@ $ python train_baseline.py \
 --learning_rate 0.01 \
 --hp_metric acc \
 ```
-Choose Hyperparameters for hidden_size, dropout, weight_decay and learning_rate according to reults in hyperparameter sweep. Specify metric that was chosen to optimize Hyperparameters (```--hp-metrics```).
+Choose hyperparameters for hidden_size, dropout, weight_decay and learning_rate according to reults in hyperparameter sweep. Specify metric that was chosen to optimize hyperparameters (```--hp-metrics```).
 
-Number of model repetitions can be specified with ```--nr_models``` and number of base estimators used for generating ensemble models can be specified with ```--nr_ensemble_estimators```. If ```--nr_ensemble_estimators```> 1, ensemble models are generated in addition.
+Number of model repetitions can be specified with ```--nr_models``` and number of base estimators used for generating ensemble models can be specified with ```--nr_ensemble_estimators```. If ```--nr_ensemble_estimators```> 1, ensemble models are generated in addition to the baseline models.
 
 ## MC Dropout (MLP-D)
 Generate MC dropout models from baseline models with

@@ -5,13 +5,13 @@ from calibration_study.utils import generate_file_path
 
 import argparse
 
-parser  =  argparse.ArgumentParser(description = 'Performs Platt Scling on Baseline Model, Ensemble Model or BLP Model.')
+parser  =  argparse.ArgumentParser(description = 'Performs Platt scaling on baseline model, ensemble model or BLP model.')
 parser.add_argument('--targetid', type = int, help = 'ChEMBL-ID')
 parser.add_argument('--hp_metric', type = str, default = 'bce', help = 'HP-metric used for early stopping')
 parser.add_argument('--nr_models', type = int, default = 10, help = 'Nr of model repeats')
 parser.add_argument('--nr_ensemble_estimators', type  =  int, default = 10, help = 'Nr of base estimators in ensemble models')
-parser.add_argument('--from_ensemble', type  =  bool, default = False, help = 'Platt Scaling of Ensemble Model')
-parser.add_argument('--from_BLP', type  =  bool, default = False, help = 'Platt Scaling of BLP Model')
+parser.add_argument('--from_ensemble', type  =  bool, default = False, help = 'Platt Scaling of ensemble model')
+parser.add_argument('--from_BLP', type  =  bool, default = False, help = 'Platt Scaling of BLP mdel')
 args  =  parser.parse_args()
 
 targetid=args.targetid
@@ -22,7 +22,7 @@ from_ensemble = args.from_ensemble
 from_BLP = args.from_BLP
 
 
-assert from_ensemble == False or from_BLP == False, 'Both from_enesmble and from_BLP is set to true. Please specify one Option.'
+assert from_ensemble == False or from_BLP == False, 'Both from_ensemble and from_BLP is set to True. Please specify one option.'
 
 data_path = f'data/CHEMBL{targetid}'
 Y_val = np.load(f'{data_path}/Y_val.npy', allow_pickle = True)

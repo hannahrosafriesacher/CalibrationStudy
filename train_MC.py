@@ -11,7 +11,7 @@ from calibration_study.utils import get_predictions, generate_file_path
 
 
 
-parser  =  argparse.ArgumentParser(description = 'Generating a Monte-Carlo Dropout Model from a baseline Model.')
+parser  =  argparse.ArgumentParser(description = 'Generating a Monte-Carlo dropout model from a baseline model.')
 
 parser.add_argument('--targetid', type = int, help = 'ChEMBL-ID')
 parser.add_argument('--hidden_sizes', type = int)

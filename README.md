@@ -7,7 +7,7 @@
 |**[Notebooks](#notebooks)**
 |**[Citation](#citation)**
 
-**Introduction**
+# **Introduction**
 In the drug discovery process, where experiments can be costly and time-consuming, computational models that predict drug-target interactions are valuable tools to accelerate the development of new therapeutic agents.
 Estimating the uncertainty inherent in these neural network predictions provides valuable information that facilitates optimal decision-making when risk assessment is crucial.
 However, such models can be poorly calibrated, which results in unreliable uncertainty estimates that do not reflect the true predictive uncertainty.
@@ -16,7 +16,7 @@ Furthermore, we propose to use a computationally efficient Bayesian uncertainty 
 We report that BLP improves model calibration and achieves the performance of common uncertainty quantification methods by combining the benefits of uncertainty estimation and probability calibration methods.
 Finally, we show that combining post hoc calibration method with well-performing uncertainty quantification approaches can boost model accuracy and calibration.
 
-**Dependencies**
+# **Dependencies**
 
 Main requirements:
 - Python >= 3.9.7
@@ -32,7 +32,7 @@ $ conda env create -f config/environment.yaml
 ```
 
 
-**Data**
+# **Data**
 ## ChEMBL Targets [[1]](#1):
 
 - ChEMBL1951: Monoamine oxidase A
@@ -44,10 +44,10 @@ Download Data into data/:
 
 ```bash
 $ cd data/
-#TODO: Add Datasets
+#Links for Data Download: Awaiting Review...
 ```
 
-**Models**
+# **Models**
 Following Models are supported:
 
 - Baseline (MLP)
@@ -58,8 +58,8 @@ Following Models are supported:
 - Bayesian linear probing (MLP-BLP)
 - Platt - scaled Bayesian linear probing (MLP-BLP + P)
 
-**Configuration**
-# Tuning Hyperparameters of MLP using wandb
+# **Configuration**
+## Tuning Hyperparameters of MLP using wandb [[2]](#2)
 
 Start Hyperparameter Sweep with
 
@@ -80,11 +80,11 @@ In this study, hyperparameters were tuned optimizing 4 different metrics:
 - Accuracy (acc)
 - AUC (rocauc)
 - BCE loss (bce)
-- Adaptive Calibration Error [[2]](#2) (ace)
+- Adaptive Calibration Error [[3]](#3) (ace)
 
-**Evaluation**
+# **Evaluation**
 
-# Baseline Model (MLP)/ Ensemble Model (MLP-E) 
+## Baseline Model (MLP)/ Ensemble Model (MLP-E) 
 
 Train baseline MLP with 
 
@@ -101,7 +101,7 @@ Choose Hyperparameters for hidden_size, dropout, weight_decay and learning_rate 
 
 Number of model repetitions can be specified with ```--nr_models``` and number of base estimators used for generating ensemble models can be specified with ```--nr_ensemble_estimators```. If ```--nr_ensemble_estimators```> 1, ensemble models are generated in addition.
 
-# MC Dropout (MLP-D)
+## MC Dropout (MLP-D)
 Generate MC dropout models from baseline models with
 
 ```bash
@@ -116,10 +116,13 @@ $ python train_mc.py \
 
 Number of forward passes can be specified with ```--nr_mc_estimators```.
 
-# Bayesian Linear Probing (MLP-BLP) [[3]](#3) [[4]](#4) 
-# TODO!!!!!!!!!!!!!!!!!
+## Bayesian Linear Probing (MLP-BLP) [[4]](#4) [[5]](#5) 
 
-# Platt Scaling (MLP + P, MLP-E + P, MLP-BLP + P)
+```bash
+# TODO!!!!!!!!!!!!!!!!!
+```
+
+## Platt Scaling (MLP + P, MLP-E + P, MLP-BLP + P)
 
 Generate platt-scaled predictions with:
 ```bash
@@ -131,26 +134,29 @@ $ python train_platt.py \
 To apply Platt-Scaling to MLP-E (or to MLP-BLP), set ```--from_ensemble``` (or ```--from_BLP```) to True.
 
 
-**Notebooks**
+# **Notebooks**
 
 Results are visualized in CalibrationStudy.ipynb.
 
-**Citation**
+# **Citation**
 
 Cite this repository: Awaiting Review...
 
-**References**
+# **References**
 
 <a id="1">[1]</a>  Mendez, D., Gaulton, A., Bento, A.P., Chambers, J., De Veij, M., F´elix, E., Magari˜nos, M., Mosquera, J., Mutowo, P., Nowotka, M., Gordillo-Mara˜n´on, M.,
 Hunter, F., Junco, L., Mugumbate, G., Rodriguez-Lopez, M., Atkinson, F., Bosc, N., Radoux, C., Segura-Cabrera, A., Hersey, A., Leach, A.: ChEMBL: towards
 direct deposition of bioassay data. Nucleic Acids Research 47(D1), 930–940 (2018) https://doi.org/10.1093/nar/gky1075
 
-<a id="2">[2]</a>   Nixon, J., Dusenberry, M.W., Zhang, L., Jerfel, G., Tran, D.: Measuring calibration in deep learning. In: Proceedings of the IEEE/CVF Conference on Computer
+<a id="2">[2]</a> Biewald, L.: Experiment Tracking with Weights and Biases. Software available
+from wandb.com (2020). https://www.wandb.com/
+
+<a id="3">[3]</a>   Nixon, J., Dusenberry, M.W., Zhang, L., Jerfel, G., Tran, D.: Measuring calibration in deep learning. In: Proceedings of the IEEE/CVF Conference on Computer
 Vision and Pattern Recognition (CVPR) Workshops (2019)
 
-<a id="3">[3]</a>   Cobb, A.D., Baydin, A.G., Jalaian, B.: hamiltorch. GitHub (2023). https://github.com/AdamCobb/hamiltorch
+<a id="4">[4]</a>   Cobb, A.D., Baydin, A.G., Jalaian, B.: hamiltorch. GitHub (2023). https://github.com/AdamCobb/hamiltorch
 
-<a id="4">[4]</a>   Cobb, A.D., Jalaian, B.: Scaling hamiltonian monte carlo inference for bayesian neural networks with symmetric splitting. In: Uncertainty in Artificial  Intelligence, pp. 675–685 (2021). PMLR
+<a id="5">[5]</a>   Cobb, A.D., Jalaian, B.: Scaling hamiltonian monte carlo inference for bayesian neural networks with symmetric splitting. In: Uncertainty in Artificial  Intelligence, pp. 675–685 (2021). PMLR
 
 
 

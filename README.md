@@ -103,7 +103,7 @@ Number of model repetitions can be specified with ```--nr_models``` and number o
 
 ## MC Dropout (MLP-D)
 > [!WARNING]
-> Needs predictions from baseline MLPs (running train_baseline.py)
+> Needs predictions from baseline MLPs (run train_baseline.py)!
 
 Generate MC dropout models from baseline models with
 
@@ -121,7 +121,7 @@ Number of forward passes can be specified with ```--nr_mc_estimators```.
 
 ## Bayesian Linear Probing (MLP-BLP) [[4]](#4) [[5]](#5) 
 > [!WARNING]
-> Needs hidden layer from baseline MLPs (running train_baseline.py).
+> Needs hidden layer from baseline MLPs (run train_baseline.py)!
 
 ```bash
 # TODO!!!!!!!!!!!!!!!!!
@@ -129,7 +129,7 @@ Number of forward passes can be specified with ```--nr_mc_estimators```.
 
 ## Platt Scaling (MLP + P, MLP-E + P, MLP-BLP + P)
 > [!WARNING]
-> Needs predictions from baseline MLPs (running train_baseline.py)/ ensemble models (running train_baseline.py)/ BLP models (#TODO)!
+> Needs predictions from baseline MLPs (run train_baseline.py)/ ensemble models (run train_baseline.py)/ BLP models (#TODO)!
 
 Generate platt-scaled predictions with:
 ```bash

@@ -102,8 +102,8 @@ Choose hyperparameters for hidden_size, dropout, weight_decay and learning_rate 
 Number of model repetitions can be specified with ```--nr_models``` and number of base estimators used for generating ensemble models can be specified with ```--nr_ensemble_estimators```. If ```--nr_ensemble_estimators```> 1, ensemble models are generated in addition to the baseline models.
 
 ## MC Dropout (MLP-D)
-[!WARNING]
-Needs predictions form baseline MLPs (running train_baseline.py)
+> [!WARNING]
+> Needs predictions form baseline MLPs (running train_baseline.py)
 
 Generate MC dropout models from baseline models with
 
@@ -120,16 +120,16 @@ $ python train_mc.py \
 Number of forward passes can be specified with ```--nr_mc_estimators```.
 
 ## Bayesian Linear Probing (MLP-BLP) [[4]](#4) [[5]](#5) 
-[!WARNING]
-Needs hidden layer form baseline MLPs (running train_baseline.py).
+> [!WARNING]
+> Needs hidden layer form baseline MLPs (running train_baseline.py).
 
 ```bash
 # TODO!!!!!!!!!!!!!!!!!
 ```
 
 ## Platt Scaling (MLP + P, MLP-E + P, MLP-BLP + P)
-[!WARNING]
-Needs predictions form baseline MLPs (running train_baseline.py)/ ensemble models (running train_baseline.py)/ BLP models (#TODO)!
+> [!WARNING]
+> Needs predictions form baseline MLPs (running train_baseline.py)/ ensemble models (running train_baseline.py)/ BLP models (#TODO)!
 
 Generate platt-scaled predictions with:
 ```bash

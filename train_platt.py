@@ -25,7 +25,7 @@ from_BLP = args.from_BLP
 assert from_ensemble == False or from_BLP == False, 'Both from_ensemble and from_BLP is set to True. Please specify one option.'
 
 data_path = f'data/CHEMBL{targetid}'
-Y_val = np.load(f'{data_path}/Y_val.npy', allow_pickle = True)
+Y_val = np.load(f'{data_path}_Y_val.npy', allow_pickle = True)
 
 for model_idx in range(nr_models):
 
@@ -33,14 +33,14 @@ for model_idx in range(nr_models):
         path_val = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_val_ensemble{nr_ensemble_estimators}')
         path_te = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_test_ensemble{nr_ensemble_estimators}')
 
-        file_path_test = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{v}_{hp_metric}_test_ensemble_platt')
+        file_path_test = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_test_ensemble_platt')
 
 
     elif from_BLP:
-        path_val = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_val_blp')
-        path_te = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_test_blp')
+        path_val = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_val_BLP')
+        path_te = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_test_BLP')
 
-        file_path_test = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{v}_{hp_metric}_test_blp_platt')
+        file_path_test = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_test_blp_platt')
 
 
     else:

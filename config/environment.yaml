@@ -1,7 +1,7 @@
 name: probability_calibration
 channels:
-  - pytorch
   - defaults
+  - pytorch
   - conda-forge
 dependencies:
   - _libgcc_mutex=0.1=conda_forge

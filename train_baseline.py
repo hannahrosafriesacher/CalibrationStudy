@@ -7,7 +7,7 @@ import torch
 import torch.optim as optim
 from scipy.special import expit
 from sklearn.metrics import roc_auc_score, accuracy_score
-from calibration_study.baseline import Baseline
+from calibration_study.models import Baseline
 from calibration_study.utils import get_predictions, generate_file_path, calcCalibrationErrors
 
 parser  =  argparse.ArgumentParser(description = 'Training a single-task classification model. Save MLP predictions and Hidden Layer for MLP model.')
@@ -44,12 +44,12 @@ assert targetid in  [240, 340, 1951], f'No data for Target with ChEMBL-ID {targe
 model_reps = nr_models * nr_ensemble_estimators
 data_path = f'data/CHEMBL{targetid}'
 
-X_train = np.load(f'{data_path}/X_train.npy', allow_pickle = True)
-Y_train = np.load(f'{data_path}/Y_train.npy', allow_pickle = True)
-X_val = np.load(f'{data_path}/X_val.npy', allow_pickle = True)
-Y_val = np.load(f'{data_path}/Y_val.npy', allow_pickle = True)
-X_test = np.load(f'{data_path}/X_test.npy', allow_pickle = True)
-Y_test = np.load(f'{data_path}/Y_test.npy', allow_pickle = True)
+X_train = np.load(f'{data_path}_X_train.npy', allow_pickle = True)
+Y_train = np.load(f'{data_path}_Y_train.npy', allow_pickle = True)
+X_val = np.load(f'{data_path}_X_val.npy', allow_pickle = True)
+Y_val = np.load(f'{data_path}_Y_val.npy', allow_pickle = True)
+X_test = np.load(f'{data_path}_X_test.npy', allow_pickle = True)
+Y_test = np.load(f'{data_path}_Y_test.npy', allow_pickle = True)
 
 X_train_torch = torch.from_numpy(X_train).float().to(device)
 Y_train_torch = torch.from_numpy(Y_train).to(device)
@@ -96,8 +96,8 @@ for model_idx in range(model_reps):
 
         metrics_dict = {
             'acc': lambda: accuracy_score(Y_val, pred_val_labels),
-            'bce': lambda: criterion(net(X_val, return_hidden=0), Y_val_torch).detach().item(),
-            'ace': lambda: calcCalibrationErrors(np.asarray(Y_val_torch.cpu()), pred_val_logits_cpu, 10)[1],
+            'bce': lambda: criterion(net(X_val_torch, return_hidden=0), Y_val_torch).detach().item(),
+            'ace': lambda: calcCalibrationErrors(Y_val, pred_val_logits_cpu, 10)[1],
             'rocauc': lambda: roc_auc_score(Y_val, pred_val)
         }
 
@@ -152,11 +152,11 @@ pred_test = np.array(pred_test_list)
 #Save Ensemble Model
 if nr_ensemble_estimators > 1:
     sm = 0
-    for ensemble_idx in range(0, nr_ensemble_estimators, nr_models):
+    for ensemble_idx in range(0, model_reps, nr_ensemble_estimators):
         mean_val = pred_val[ensemble_idx : ensemble_idx + nr_ensemble_estimators].mean(axis=0)
         mean_test = pred_test[ensemble_idx : ensemble_idx + nr_ensemble_estimators].mean(axis=0)
-        file_path_ensemble_val = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{ensemble_idx}_{hp_metric}_val_ensemble{nr_ensemble_estimators}')
-        file_path_ensemble_test = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{ensemble_idx}_{hp_metric}_test_ensemble{nr_ensemble_estimators}')
+        file_path_ensemble_val = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{sm}_{hp_metric}_val_ensemble{nr_ensemble_estimators}')
+        file_path_ensemble_test = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{sm}_{hp_metric}_test_ensemble{nr_ensemble_estimators}')
         np.save(file_path_ensemble_val,  mean_val)
         np.save(file_path_ensemble_test, mean_test)
         sm += 1

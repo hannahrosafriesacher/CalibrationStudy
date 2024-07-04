@@ -1,3 +1,4 @@
+from pathlib import Path
 import torch
 import numpy as np
 
@@ -18,7 +19,8 @@ def get_predictions(net, X_val, X_test, X_train):
     }
 
 def generate_file_path(type, targetid, suffix):
-    return f'{type}/{targetid}_{suffix}.npy'
+    Path(f'{type}/CHEMBL{targetid}/').mkdir(parents = True, exist_ok = True)
+    return f'{type}/CHEMBL{targetid}/{suffix}.npy'
 
 
 def calcCalibrationErrors(y_true, y_score, num_bins):

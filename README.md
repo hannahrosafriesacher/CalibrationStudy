@@ -1,10 +1,10 @@
 |**[Introduction](#introduction)**
 |**[Dependencies](#dependencies)**
 |**[Data](#data)**
-|**[Models](#models)**
+|**[Supported Models](#supported-models)**
 |**[Configuration](#configuration)**
-|**[Evaulation](#evaluation)**
-|**[Notebooks](#notebooks)**
+|**[Model Generation](#model-generation)**
+|**[Model Evaluation](#model-evaluation)**
 |**[Citation](#citation)**
 
 # **Introduction**
@@ -18,12 +18,7 @@ Finally, we show that combining post hoc calibration method with well-performing
 
 # **Dependencies**
 
-Main requirements:
-- Python >= 3.9.7
-- Cuda >= 12.4
-- Pytorch >= 2.0.1
-
-**Logging** is supported with: wandb >= 0.15.10
+**Hyperparameters Tuning** is supported with wandb sweeps: wandb >= 0.15.10
 
 Install full conda environment with
 
@@ -40,14 +35,11 @@ $ conda env create -f config/environment.yaml
 - ChEMBL240: hERG
 
 
-Download data into ```data/```:
+Download data [here](https://zenodo.org/records/12636129?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImE0Y2E5YTVjLTNkZDktNDRiOS04NmUwLTAzN2YyMjNhNzFkMSIsImRhdGEiOnt9LCJyYW5kb20iOiI0OTQyZWY0MTYyMjY4ZGQ3YzY3OTNkMTNiOTZiMTkzNyJ9.ScXSJQn7zoL39f_qTymwLG5FW1EQf2Plmqe6FRJkQr8yuSR0L6pK7Dca5avSgicmcjtlK1RzDFIaON_Jk1VdoQ)
 
-```bash
-$ cd data/
-#Links for Data Download: Awaiting Review...
-```
+`
 
-# **Models**
+# **Supported Models**
 Following models are supported:
 
 - Baseline (MLP)
@@ -82,7 +74,7 @@ In this study, hyperparameters were tuned optimizing 4 different metrics:
 - BCE loss (bce)
 - Adaptive Calibration Error [[3]](#3) (ace)
 
-# **Evaluation**
+# **Model Generation**
 
 ## Baseline Model (MLP)/ Ensemble Model (MLP-E) 
 
@@ -90,14 +82,14 @@ Train baseline MLP with
 
 ```bash
 $ python train_baseline.py \
---targetid 240 \
---hidden_sizes 4 \
+--targetid 340 \
+--hidden_sizes 20 \
 --dropout 0.6 \
---weight_decay 0.0001 \
---learning_rate 0.01 \
---hp_metric acc \
+--weight_decay 0.01 \
+--learning_rate 0.001 \
+--hp_metric bce \
 ```
-Choose hyperparameters for hidden_size, dropout, weight_decay and learning_rate according to reults in hyperparameter sweep. Specify metric that was chosen to optimize hyperparameters (```--hp-metrics```).
+Choose hyperparameters for hidden_size, dropout, weight_decay and learning_rate according to results in hyperparameter sweep. Specify metric that was chosen to optimize hyperparameters (```--hp-metrics```).
 
 Number of model repetitions can be specified with ```--nr_models``` and number of base estimators used for generating ensemble models can be specified with ```--nr_ensemble_estimators```. If ```--nr_ensemble_estimators```> 1, ensemble models are generated in addition to the baseline models.
 
@@ -109,23 +101,49 @@ Generate MC dropout models from baseline models with
 
 ```bash
 $ python train_mc.py \
---targetid 240 \
---hidden_sizes 4 \
+--targetid 340 \
+--hidden_sizes 20 \
 --dropout 0.6 \
---weight_decay 0.0001 \
---learning_rate 0.01 \
---hp_metric acc \
+--weight_decay 0.01 \
+--learning_rate 0.001 \
+--hp_metric bce \
 ```
 
 Number of forward passes can be specified with ```--nr_mc_estimators```.
 
 ## Bayesian Linear Probing (MLP-BLP) [[4]](#4) [[5]](#5) 
+1. Hyperparameter tuning of MLP-BLP model:
 > [!WARNING]
 > Needs hidden layer from baseline MLPs (run train_baseline.py)!
 
+Tune precision of prior distribution (tau_in) with:
 ```bash
-# TODO!!!!!!!!!!!!!!!!!
+$ wandb sweep config/sweep_BLP.yaml 
 ```
+
+Copy Sweep-ID and start agent with 
+```bash
+$ wandb agent sweep_id
+```
+
+2.  MLP-BLP model training:
+> [!WARNING]
+> Needs hidden layer from baseline MLPs (run train_baseline.py)!
+
+Generate MLP-BLP models with
+
+```bash
+$ python train_BLP.py \
+--targetid 340 \
+--hidden_sizes 20 \
+--tau_in 200 \
+--hp_metric bce \
+```
+
+Choose hyperparameters for tau_in according to results in hyperparameter sweep. Specify metric that was chosen to optimize hyperparameters (```--hp-metrics```).
+
+Other parameters, like number of model repetitions, stepsize and number of generated samples can be specified with ```--nr_models```, ```--step_size``` and ```--num_samples```. 
+
 
 ## Platt Scaling (MLP + P, MLP-E + P, MLP-BLP + P)
 > [!WARNING]
@@ -134,15 +152,22 @@ Number of forward passes can be specified with ```--nr_mc_estimators```.
 Generate platt-scaled predictions with:
 ```bash
 $ python train_platt.py \
---targetid 240 \
---hp_metric acc \
+--targetid 340 \
+--hp_metric bce \
 ```
 
 To apply Platt-Scaling to MLP-E (or to MLP-BLP), set ```--from_ensemble``` (or ```--from_BLP```) to True.
 
-# **Notebooks**
+# **Model Evaluation**
+To calculate the accuracy, the auc, the calibration error and the Brier score using the model predictions, run:
+```bash
+$ python evaluation.py /
+--targets 240 340 1951 /
+--hp_metrics acc auc bce ace
+```
+The resuts are stored in ```predictions/results.csv```.
 
-Results are visualized in CalibrationStudy.ipynb.
+The number of generated models, as well as the numberd of base estimators used for generating the ensemble models and the number of forward passes used for MC sopout can be specified with ```--nr_models```, ```--nr_ensemble_estimators```, and ```--nr_mc_estimators'```.
 
 # **Citation**
 

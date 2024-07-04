@@ -21,3 +21,11 @@ class Baseline(torch.nn.Module):
             return out, a
         elif return_hidden == 0:
             return out
+        
+class Logistic(torch.nn.Module):
+    def __init__(self, n_input):
+        super(Logistic, self).__init__()
+        self.net = torch.nn.Linear(n_input,1)
+
+    def forward(self, x):
+        return self.net(x)

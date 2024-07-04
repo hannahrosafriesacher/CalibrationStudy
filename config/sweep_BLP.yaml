@@ -1,0 +1,23 @@
+program: sweep_BLP.py
+name: sweep_blp_calibration_study
+project: CalibrationStudy
+method: grid
+parameters:
+  targetid: 
+    values: [340]
+  hp_metric:
+    values: ['bce']
+  hidden_sizes:
+    values: [20]   #change to hidden size used for generation of baseline models
+  nr_models:
+    values: [5]
+  step_size:
+    values: [0.1]
+  num_samples: 
+    values: [10]
+  burnin: 
+    values: [2]
+  num_steps_per_sample: 
+    values: [1200]
+  tau_in:
+    values: [100, 400, 700, 1000, 1300, 1600, 1900, 2200, 2500]   #we suggest to do a subsequent finer search around optimum of this search

@@ -3,7 +3,7 @@ import numpy as np
 import torch
 
 import torch.optim as optim
-from calibration_study.baseline import Baseline
+from calibration_study.models import Baseline
 
 from calibration_study.utils import calcCalibrationErrors, calcBrier
 from sklearn.metrics import roc_auc_score, accuracy_score
@@ -30,12 +30,12 @@ def train(targetid, epoch_number, batch_size, nr_models, hidden_sizes, dropout, 
     data_path = f'data/CHEMBL{targetid}'
 
     #to Torch
-    X_train = np.load(f'{data_path}/X_train.npy', allow_pickle = True)
-    Y_train = np.load(f'{data_path}/Y_train.npy', allow_pickle = True)
-    X_val = np.load(f'{data_path}/X_val.npy', allow_pickle = True)
-    Y_val = np.load(f'{data_path}/Y_val.npy', allow_pickle = True)
-    X_test = np.load(f'{data_path}/X_test.npy', allow_pickle = True)
-    Y_test = np.load(f'{data_path}/Y_test.npy', allow_pickle = True)
+    X_train = np.load(f'{data_path}_X_train.npy', allow_pickle = True)
+    Y_train = np.load(f'{data_path}_Y_train.npy', allow_pickle = True)
+    X_val = np.load(f'{data_path}_X_val.npy', allow_pickle = True)
+    Y_val = np.load(f'{data_path}_Y_val.npy', allow_pickle = True)
+    X_test = np.load(f'{data_path}_X_test.npy', allow_pickle = True)
+    Y_test = np.load(f'{data_path}_Y_test.npy', allow_pickle = True)
 
     X_train_torch = torch.from_numpy(X_train).float().to(device)
     Y_train_torch = torch.from_numpy(Y_train).to(device)
@@ -43,7 +43,6 @@ def train(targetid, epoch_number, batch_size, nr_models, hidden_sizes, dropout, 
     Y_val_torch = torch.from_numpy(Y_val).to(device)
     X_test_torch = torch.from_numpy(X_test).float().to(device)
     num_input_features = X_train.shape[1]
-
 
     metric_sums = {
     'loss_train': 0, 'acc_train': 0, 'auc_roc_train': 0, 'auc_pr_train': 0, 'ECE_train': 0, 'ACE_train': 0, 'brier_train': 0,
@@ -71,15 +70,15 @@ def train(targetid, epoch_number, batch_size, nr_models, hidden_sizes, dropout, 
         #training loop
         for epoch in range(epoch_number):  # loop over the dataset multiple times 
             permutation = torch.randperm(X_train_torch.size()[0])
-            
-            for i in range(0,X_train.size()[0], batch_size):
+            for i in range(0,X_train.shape[0], batch_size):
+                
                 optimizer.zero_grad()
                 # get the inputs; data is a list of [inputs, labels]
                 indices = permutation[i:i+batch_size]
                 inputs, labels = X_train_torch[indices], Y_train_torch[indices]        
                 # forward + backward + optimizer
                 net.eval()
-                outputs = net(inputs)
+                outputs = net(inputs, return_hidden = 0)
                 net.train()
                 loss = criterion(outputs, labels)
                 loss.backward()
@@ -89,8 +88,8 @@ def train(targetid, epoch_number, batch_size, nr_models, hidden_sizes, dropout, 
             net.eval()
             
             #predict Training and Validation Dataset
-            pred_train_logits = net(X_train_torch, return_hidden  =  0).detach()
-            pred_val_logits = net(X_val_torch, return_hidden  =  0).detach()
+            pred_train_logits = net(X_train_torch, return_hidden = 0).detach()
+            pred_val_logits = net(X_val_torch, return_hidden = 0).detach()
             pred_train = torch.special.expit(pred_train_logits).cpu().numpy()
             pred_val = torch.special.expit(pred_val_logits).cpu().numpy()
             pred_train_labels = np.where(pred_train>0.5,1.0,0.0)
@@ -106,19 +105,19 @@ def train(targetid, epoch_number, batch_size, nr_models, hidden_sizes, dropout, 
             auc_roc_train = roc_auc_score(Y_train, pred_train)
             precision_train, recall_train, _  =  precision_recall_curve(Y_train, pred_train)
             auc_pr_train  =  auc(recall_train, precision_train)
-            ECE_train = calcCalibrationErrors(Y_train, pred_train_logits_cpu,10)[0]
-            ACE_train = calcCalibrationErrors(Y_train, pred_train_logits_cpu,10)[1]
+            ECE_train = calcCalibrationErrors(Y_train, pred_train_logits_cpu, 10)[0]
+            ACE_train = calcCalibrationErrors(Y_train, pred_train_logits_cpu, 10)[1]
             brier_train = calcBrier(Y_train, pred_train_logits_cpu)
 
             #Scores Validation Dataset
-            loss_val = criterion(net(X_val_torch, return_hidden  =  0), Y_val+torch).detach().item()
+            loss_val = criterion(net(X_val_torch, return_hidden = 0), Y_val_torch).detach().item()
             acc_val = accuracy_score(Y_val, pred_val_labels)
             auc_roc_val = roc_auc_score(Y_val, pred_val)
             precision_val, recall_val, _  =  precision_recall_curve(Y_val, pred_val)
             auc_pr_val  =  auc(recall_val, precision_val)
-            ECE_val = calcCalibrationErrors(np.asarray(Y_val.cpu()), pred_val_logits_cpu,10)[0]
-            ACE_val = calcCalibrationErrors(np.asarray(Y_val.cpu()), pred_val_logits_cpu,10)[1]
-            brier_val = calcBrier(np.asarray(Y_val.cpu()), pred_val_logits_cpu)
+            ECE_val = calcCalibrationErrors(Y_val, pred_val_logits_cpu,10)[0]
+            ACE_val = calcCalibrationErrors(Y_val, pred_val_logits_cpu,10)[1]
+            brier_val = calcBrier(Y_val, pred_val_logits_cpu)
 
             # Current metric values
             current_metrics = {
@@ -130,21 +129,20 @@ def train(targetid, epoch_number, batch_size, nr_models, hidden_sizes, dropout, 
             }
 
             wandb.log(current_metrics)
-
             # Update best metric values
             for metric, current_value in current_metrics.items():
-                compare = comparison_functions[metric]
-                best_metrics[metric] = compare(current_value, best_metrics[metric])
+                metric_short = metric.split('/')[0]
+                compare = comparison_functions[metric_short]
+                best_metrics[metric_short] = compare(current_value, best_metrics[metric_short])
 
 
         # Update WandB summary and sums
-        
-        for metric, suffix in comparison_functions.items():
+        for metric, comp in comparison_functions.items():
 
             phase = metric.split('_')[-1]
+            suffix = 'max' if comp == max else 'min'
             wandb.summary[f'{phase.capitalize()}/{metric.capitalize()}/{model_idx}/.{suffix}'] = best_metrics[metric]
             metric_sums[metric] += best_metrics[metric]
-
 
     for metric, suffix in comparison_functions.items():
         wandb.summary[f'{phase.capitalize()}/{metric.capitalize()}/average']  = metric_sums[metric]/nr_models

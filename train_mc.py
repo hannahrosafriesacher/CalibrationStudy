@@ -6,7 +6,7 @@ import torch
 import torch.optim as optim
 from scipy.special import expit
 from sklearn.metrics import roc_auc_score, accuracy_score
-from calibration_study.baseline import Baseline
+from calibration_study.models import Baseline
 from calibration_study.utils import get_predictions, generate_file_path
 
 
@@ -45,12 +45,12 @@ nr_mc_estimators = args.nr_mc_estimators
 data_path = f'data/CHEMBL{targetid}'
 
 #to Torch
-X_train = np.load(f'{data_path}/X_train.npy', allow_pickle = True)
-Y_train = np.load(f'{data_path}/Y_train.npy', allow_pickle = True)
-X_val = np.load(f'{data_path}/X_val.npy', allow_pickle = True)
-Y_val = np.load(f'{data_path}/Y_val.npy', allow_pickle = True)
-X_test = np.load(f'{data_path}/X_test.npy', allow_pickle = True)
-Y_test = np.load(f'{data_path}/Y_test.npy', allow_pickle = True)
+X_train = np.load(f'{data_path}_X_train.npy', allow_pickle = True)
+Y_train = np.load(f'{data_path}_Y_train.npy', allow_pickle = True)
+X_val = np.load(f'{data_path}_X_val.npy', allow_pickle = True)
+Y_val = np.load(f'{data_path}_Y_val.npy', allow_pickle = True)
+X_test = np.load(f'{data_path}_X_test.npy', allow_pickle = True)
+Y_test = np.load(f'{data_path}_Y_test.npy', allow_pickle = True)
 
 X_train_torch = torch.from_numpy(X_train).float().to(device)
 Y_train_torch = torch.from_numpy(Y_train).to(device)
@@ -88,5 +88,5 @@ for model_idx in range(nr_models):
         predictions_sum+=expit(pred_cpu_test.cpu().numpy())
     
     prediction_te_mc = predictions_sum/nr_mc_estimators
-    prediction_file_test= generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_val_mc{nr_mc_estimators}')
+    prediction_file_test= generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_test_mc{nr_mc_estimators}')
     np.save(prediction_file_test, prediction_te_mc)

@@ -1,5 +1,5 @@
-program: sweep.py
-name: sweep_calibration_study_test
+program: sweep_baseline.py
+name: sweep_baseline_calibration_study
 project: CalibrationStudy
 method: grid
 parameters:

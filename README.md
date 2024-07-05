@@ -1,4 +1,3 @@
-|**[Introduction](#introduction)**
 |**[Dependencies](#dependencies)**
 |**[Data](#data)**
 |**[Supported Models](#supported-models)**
@@ -18,7 +17,7 @@ Finally, we show that combining post hoc calibration method with well-performing
 
 # **Dependencies**
 
-**Hyperparameters Tuning** is supported with wandb sweeps: wandb >= 0.15.10
+**Hyperparameter Tuning** is supported with wandb sweeps: wandb >= 0.15.10
 
 Install full conda environment with
 
@@ -35,9 +34,8 @@ $ conda env create -f config/environment.yaml
 - ChEMBL240: hERG
 
 
-Download data [here](https://zenodo.org/records/12636129?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6ImE0Y2E5YTVjLTNkZDktNDRiOS04NmUwLTAzN2YyMjNhNzFkMSIsImRhdGEiOnt9LCJyYW5kb20iOiI0OTQyZWY0MTYyMjY4ZGQ3YzY3OTNkMTNiOTZiMTkzNyJ9.ScXSJQn7zoL39f_qTymwLG5FW1EQf2Plmqe6FRJkQr8yuSR0L6pK7Dca5avSgicmcjtlK1RzDFIaON_Jk1VdoQ)
+The data can be downloaded [here](https://zenodo.org/records/12663462?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjI4ZGZmMTkzLWFkYzAtNGYyMC1iNmU1LTIwN2JiNmI5ZjdmZSIsImRhdGEiOnt9LCJyYW5kb20iOiI5ZTM3ZGIwOTU0Yjg2MjNjOTI1ZWE0MjA3YWQ1MzcwZSJ9.ceb44yTkp-0ZDUf2dk6J_dRz2EVreqBXiqUL7LIkLhnFfpUfpqMtqa37CN6xunh917kI0l9TEVQWLNelvZdJIA).
 
-`
 
 # **Supported Models**
 Following models are supported:
@@ -125,6 +123,7 @@ Copy Sweep-ID and start agent with
 ```bash
 $ wandb agent sweep_id
 ```
+We recommend a subsequent second sweep for a finer search around the optimum of the first sweep.
 
 2.  MLP-BLP model training:
 > [!WARNING]

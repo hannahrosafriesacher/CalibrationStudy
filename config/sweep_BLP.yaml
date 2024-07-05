@@ -10,13 +10,13 @@ parameters:
   hidden_sizes:
     values: [20]   #change to hidden size used for generation of baseline models
   nr_models:
-    values: [5]
+    values: [10]
   step_size:
     values: [0.1]
   num_samples: 
-    values: [10]
+    values: [1000]
   burnin: 
-    values: [2]
+    values: [500]
   num_steps_per_sample: 
     values: [1200]
   tau_in:

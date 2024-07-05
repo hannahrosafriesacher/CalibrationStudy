@@ -63,11 +63,11 @@ def ipse(x):
 
 
 data_path = f'data/CHEMBL{targetid}'
-Y = torch.from_numpy((np.load(f'{data_path}_Y_train.npy', allow_pickle = True) + 1)/2)
+Y = torch.from_numpy(np.load(f'{data_path}_Y_train.npy', allow_pickle = True))
 
-y_val = torch.from_numpy((np.load(f'{data_path}_Y_val.npy', allow_pickle = True) + 1)/2)
+y_val = torch.from_numpy(np.load(f'{data_path}_Y_val.npy', allow_pickle = True))
 y_val_int = y_val.type(torch.int64)
-y_test = torch.from_numpy((np.load(f'{data_path}_Y_test.npy', allow_pickle = True) + 1)/2)
+y_test = torch.from_numpy(np.load(f'{data_path}_Y_test.npy', allow_pickle = True))
 
 net = Logistic(hidden_sizes) 
 

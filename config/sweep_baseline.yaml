@@ -4,7 +4,7 @@ project: CalibrationStudy
 method: grid
 parameters:
   targetid: 
-    values: [240]
+    values: [240, 340, 1951]
   epoch_number: 
     values: [400]
   batch_size: 

@@ -2,9 +2,6 @@ import torch
 import hamiltorch
 import numpy as np
 
-import torch.nn as nn
-import matplotlib.pyplot as plt
-
 import wandb
 from torchmetrics.classification import Accuracy, AUROC, CalibrationError
 from calibration_study.utils import get_predictions, generate_file_path, calcCalibrationErrors
@@ -41,7 +38,7 @@ def ipse(x):
 def train(targetid, hp_metric, hidden_sizes, nr_models, step_size, num_samples, burnin, num_steps_per_sample, tau_in):
 
     data_path = f'data/CHEMBL{targetid}'
-    Y = torch.from_numpy((np.load(f'{data_path}_Y_train.npy', allow_pickle = True) + 1)/2)
+    Y = torch.from_numpy(np.load(f'{data_path}_Y_train.npy', allow_pickle = True))
 
     #Validation Data
     y_val = torch.from_numpy(np.load(f'{data_path}_Y_val.npy', allow_pickle = True))
@@ -79,22 +76,13 @@ def train(targetid, hp_metric, hidden_sizes, nr_models, step_size, num_samples, 
                 "ESS_err_cutoff_sc_0.05": 0.0,
                 "ESS_err_cutoff_sc_0.005" : 0.0,
                 "ESS_err_IPSE" : 0.0,
-                "val_acc":0.0,
-                "val_ECE" : 0.0,
-                "val_AUC" :0.0,
-                "val_ACE": 0.0,
-                "val_Brier": 0.0,
-                "tr_acc":0.0,
-                "tr_ECE" : 0.0,
-                "tr_AUC" :0.0,
-                "val_logloss" :0.0,
-                "tr_logloss" :0.0,
-                "test_acc":0.0,
-                "test_ECE" : 0.0,
-                "test_AUC" :0.0,
-                "test_ACE": 0.0,
-                "test_Brier": 0.0,
-                "test_logloss" :0.0,
+                "Acc_val":0.0,
+                "ECE_val" : 0.0,
+                "AUC_val" :0.0,
+                "ACE_val": 0.0,
+                "Brier_val": 0.0,
+                "Loss_val" :0.0,
+                
                 }
     for model_idx in range(nr_models):
         print("=============================")
@@ -107,14 +95,11 @@ def train(targetid, hp_metric, hidden_sizes, nr_models, step_size, num_samples, 
         hidden_file_train = generate_file_path(type = 'predictions', targetid = targetid, suffix = f'rep{model_idx}_{hp_metric}_train_hidden')
         
         
-        print("Opening training X file: ", hidden_file_train)
         X = torch.Tensor(np.load(hidden_file_train))
-        print("Opening validation X file: ", hidden_file_val)
         x_val = torch.Tensor(np.load(hidden_file_val))
 
         net = Logistic(hidden_sizes) 
        
-        print("Performing Laplace approximation to initialize the mass matrix ...")
         eps = 100.0 #due to the scale of Hessian is large
         scale = 100.0
         LR = lm.LogisticRegression().fit(X, Y)
@@ -170,8 +155,6 @@ def train(targetid, hp_metric, hidden_sizes, nr_models, step_size, num_samples, 
         max_autocorr = num_samples - burnin
         scaling = 1 - np.linspace(1,max_autocorr-1,max_autocorr-1)/(num_samples - burnin)
         
-        
-        
         xidx = 40
         acorr = [autocorr(pred[:,xidx,0],t) for t in range(1,max_autocorr)] #0
 
@@ -194,36 +177,36 @@ def train(targetid, hp_metric, hidden_sizes, nr_models, step_size, num_samples, 
         acc_val = Accuracy((avgpred>0)*1.0, y_val_int)
         
 
-        wandb.summary[f"val_acc_{model_idx}"] = acc_val
-        accumulator[f"val_acc"] += acc_val
+        wandb.summary[f"Acc_val/{model_idx}"] = acc_val
+        accumulator[f"Acc_val"] += acc_val
         Accuracy.reset()
         auc_val = AUROC(avgpred, y_val_int)
 
-        wandb.summary[f"val_AUC_{model_idx}"] = auc_val 
-        accumulator[f"val_AUC"] += auc_val
+        wandb.summary[f"AUC_val/{model_idx}"] = auc_val 
+        accumulator[f"AUC_val"] += auc_val
         AUROC.reset()
         ECE_val = ECE(avgpred[:,0], y_val_int[:,0])
 
-        wandb.summary[f"val_ECE_{model_idx}"] = ECE_val
-        accumulator[f"val_ECE"] += ECE_val
+        wandb.summary[f"ECE_val/{model_idx}"] = ECE_val
+        accumulator[f"ECE_val"] += ECE_val
         ECE.reset()
         ACE_val = ACE(avgpred[:,0], y_val_int[:,0])
 
-        wandb.summary[f"val_ACE_{model_idx}"] = ACE_val
-        accumulator[f"val_ACE"] += ACE_val
+        wandb.summary[f"ACE_val/{model_idx}"] = ACE_val
+        accumulator[f"ACE_val"] += ACE_val
         ACE.reset()
         Brier_val = Brier(avgpred[:,0], y_val_int[:,0])
 
-        wandb.summary[f"val_Brier_{model_idx}"] = Brier_val
-        accumulator[f"val_Brier"] += Brier_val
+        wandb.summary[f"Brier_val/{model_idx}"] = Brier_val
+        accumulator[f"Brier_val"] += Brier_val
         Brier.reset()
 
         nll_val = torch.stack(list_log_prob).mean()
-        wandb.summary[f"val_logloss_{model_idx}"] = nll_val
-        accumulator[f"val_logloss"] += nll_val
+        wandb.summary[f"Loss_val/{model_idx}"] = nll_val
+        accumulator[f"Loss_val"] += nll_val
 
     for key in accumulator.keys():
-        wandb.summary[key+"_TOT"] = accumulator[key]/model_idx
+        wandb.summary[key+"/average"] = accumulator[key]/nr_models
 
 def main():
     with open("config/sweep_baseline.yaml") as file:

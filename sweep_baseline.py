@@ -141,11 +141,11 @@ def train(targetid, epoch_number, batch_size, nr_models, hidden_sizes, dropout, 
 
             phase = metric.split('_')[-1]
             suffix = 'max' if comp == max else 'min'
-            wandb.summary[f'{phase.capitalize()}/{metric.capitalize()}/{model_idx}/.{suffix}'] = best_metrics[metric]
+            wandb.summary[f'{metric.capitalize()}/{model_idx}/.{suffix}'] = best_metrics[metric]
             metric_sums[metric] += best_metrics[metric]
 
     for metric, suffix in comparison_functions.items():
-        wandb.summary[f'{phase.capitalize()}/{metric.capitalize()}/average']  = metric_sums[metric]/nr_models
+        wandb.summary[f'{metric.capitalize()}/average']  = metric_sums[metric]/nr_models
 
     
 def main():

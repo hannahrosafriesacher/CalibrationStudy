@@ -7,7 +7,7 @@ import argparse
 
 parser  =  argparse.ArgumentParser(description = 'Performs Platt scaling on baseline model, ensemble model or BLP model.')
 parser.add_argument('--targetid', type = int, help = 'ChEMBL-ID')
-parser.add_argument('--hp_metric', type = str, default = 'bce', help = 'HP-metric used for early stopping')
+parser.add_argument('--hp_metric', type = str, required=True, help="Optimization metric used for learning the original NN", choices=["bce","rocauc","ace","acc"])
 parser.add_argument('--nr_models', type = int, default = 10, help = 'Nr of model repeats')
 parser.add_argument('--nr_ensemble_estimators', type  =  int, default = 10, help = 'Nr of base estimators in ensemble models')
 parser.add_argument('--from_ensemble', type  =  bool, default = False, help = 'Platt Scaling of ensemble model')

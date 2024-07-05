@@ -27,7 +27,7 @@ $ conda env create -f config/environment.yaml
 
 
 # **Data**
-## ChEMBL Targets [[1]](#1):
+ChEMBL Targets [[1]](#1):
 
 - ChEMBL1951: Monoamine oxidase A
 - ChEMBL340: Cytochrome P450 3A4
@@ -110,7 +110,7 @@ $ python train_mc.py \
 Number of forward passes can be specified with ```--nr_mc_estimators```.
 
 ## Bayesian Linear Probing (MLP-BLP) [[4]](#4) [[5]](#5) 
-1. Hyperparameter tuning of MLP-BLP model:
+### 1. Hyperparameter tuning of MLP-BLP model:
 > [!WARNING]
 > Needs hidden layer from baseline MLPs (run train_baseline.py)!
 
@@ -125,7 +125,7 @@ $ wandb agent sweep_id
 ```
 We recommend a subsequent second sweep for a finer search around the optimum of the first sweep.
 
-2.  MLP-BLP model training:
+### 2.  MLP-BLP model training:
 > [!WARNING]
 > Needs hidden layer from baseline MLPs (run train_baseline.py)!
 
@@ -146,7 +146,7 @@ Other parameters, like number of model repetitions, stepsize and number of gener
 
 ## Platt Scaling (MLP + P, MLP-E + P, MLP-BLP + P)
 > [!WARNING]
-> Needs predictions from baseline MLPs (run train_baseline.py)/ ensemble models (run train_baseline.py)/ BLP models (#TODO)!
+> Needs predictions from baseline MLPs (run train_baseline.py)/ ensemble models (run train_baseline.py)/ BLP models!
 
 Generate platt-scaled predictions with:
 ```bash
